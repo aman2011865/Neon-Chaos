@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#070a0e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>NEON CHAOS: Survive the Arena</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="game-container">
+  <!-- Main Game Canvas -->
+  <canvas id="game"></canvas>
+
+  <!-- Screen-Space Responsive HUD -->
+  <header id="hud" aria-label="Game HUD">
+    <section class="hud-block hud-hp" aria-label="Player health">
+      <div class="hud-label-row"><span class="hud-title">HEALTH</span><span class="hud-val" id="hp-text">100/100</span></div>
+      <div id="healthbar" class="meter-bar" role="meter" aria-label="Health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="healthfill" class="meter-fill"></div></div>
+    </section>
+    <section class="hud-block hud-wave" aria-label="Wave progress">
+      <span class="wave-tag">WAVE</span><strong class="wave-number" id="wave">1</strong>
+      <span class="enemy-count"><b id="enemy-count">7</b> ENEMIES LEFT</span>
+    </section>
+    <section class="hud-block hud-score" aria-label="Run statistics">
+      <div class="hud-label-row"><span class="hud-title">SCORE</span><span class="hud-val" id="score">0</span></div>
+      <div class="hud-microstats"><span><b id="kill-count">0</b> KILLS</span><span id="run-clock">00:00</span></div>
+    </section>
+    <section class="hud-block hud-chaos" aria-label="Chaos meter">
+      <div class="hud-label-row"><span class="chaos-title">CHAOS</span><span class="chaos-pct" id="chaos-pct">0%</span></div>
+      <div id="chaosbar" class="meter-bar" role="meter" aria-label="Chaos" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="chaosfill" class="meter-fill"></div></div>
+      <div id="active-effect" class="active-effect" hidden><span class="effect-live-dot"></span><span id="active-effect-name"></span><span id="active-effect-time"></span></div>
+    </section>
+    <button id="pause-btn" class="hud-icon-btn" aria-label="Pause Game (ESC)" title="Pause (ESC)">
+      <span class="pause-symbol" aria-hidden="true">Ⅱ</span><span class="sr-only">Pause</span>
+    </button>
+  </header>
+
+  <!-- Responsive Wave & Event Banner -->
+  <div id="banner" class="hud-banner" aria-live="polite" role="status">
+    <svg id="banner-icon" class="banner-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.4 1.8 4.8 13h5.6l-.7 9.2L19.2 11h-5.7z"/></svg>
+    <div id="banner-title" class="banner-title"></div>
+    <div id="banner-sub" class="banner-sub"></div>
+  </div>
+
+  <!-- Desktop Keyboard Hint Footer (hidden on touch devices) -->
+  <div id="desktop-hint">
+    <span><kbd>A</kbd><kbd>D</kbd> / <kbd>←</kbd><kbd>→</kbd> Move</span>
+    <span><kbd>SPACE</kbd> / <kbd>W</kbd> Jump</span>
+    <span><kbd>MOUSE</kbd> / <kbd>J</kbd> Shoot</span>
+    <span><kbd>ESC</kbd> Pause</span>
+  </div>
+
+  <!-- Screen-Space Mobile Touch Controls -->
+  <div id="touch-controls" class="touch-layer">
+    <!-- LEFT SIDE: Jump (Top) & Move Left/Right (Bottom) -->
+    <div class="touch-cluster touch-left" id="touch-left-zone">
+      <!-- Jump Button with Multi-jump Pips -->
+      <button class="tbtn tbtn-jump" id="tc-jump" aria-label="Jump">
+        <div class="jump-content">
+          <svg viewBox="0 0 24 24" class="ticon jump-arrow"><polygon points="12,4 4,14 20,14"/></svg>
+          <span class="tbtn-sub">JUMP</span>
+        </div>
+        <div class="jump-pips" id="jump-pips">
+          <span class="pip pip-active" id="pip-1"></span>
+          <span class="pip pip-active" id="pip-2"></span>
+          <span class="pip pip-bonus" id="pip-3"></span>
+        </div>
+      </button>
+
+      <!-- Move D-Pad (Left & Right) -->
+      <div class="dpad-group">
+        <button class="tbtn tbtn-dir" id="tc-left" aria-label="Move Left">
+          <svg viewBox="0 0 24 24" class="ticon"><polygon points="15,4 7,12 15,20"/></svg>
+        </button>
+        <div class="dpad-mid-label">MOVE</div>
+        <button class="tbtn tbtn-dir" id="tc-right" aria-label="Move Right">
+          <svg viewBox="0 0 24 24" class="ticon"><polygon points="9,4 17,12 9,20"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: Aim (Top) & Shoot (Bottom) -->
+    <div class="touch-cluster touch-right" id="touch-right-zone">
+      <!-- Virtual Aim Touchpad -->
+      <div class="aim-touchpad" id="aim-touchpad" aria-label="Aim Touchpad">
+        <div class="aim-ring"></div>
+        <div class="aim-crosshair-h"></div>
+        <div class="aim-crosshair-v"></div>
+        <div class="aim-dot" id="aim-touch-dot"></div>
+        <div class="aim-label">AIM</div>
+      </div>
+
+      <!-- Shoot Button -->
+      <button class="tbtn tbtn-shoot" id="tc-shoot" aria-label="Shoot">
+        <div class="shoot-inner">
+          <div class="shoot-core"></div>
+          <span class="shoot-text">SHOOT</span>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- UI Overlays & Menus -->
+  <div id="overlay-container" class="overlay-backdrop">
+    <!-- 1. Main Title Screen -->
+    <section id="title-screen" class="modal-card title-card" aria-labelledby="game-title">
+      <div class="title-eyebrow"><span class="status-dot"></span> ARCADE SURVIVAL / 01</div>
+      <div class="title-logo-wrap"><h1 class="game-logo" id="game-title">NEON <span>CHAOS</span></h1><div class="logo-sub">SURVIVE THE ARENA</div></div>
+      <p class="flavor-desc">The arena won't hold still. Neither should you.</p>
+      <div class="menu-actions">
+        <button class="btn btn-primary" id="startBtn"><span>PLAY</span><span class="button-arrow" aria-hidden="true">↗</span></button>
+        <div class="menu-secondary-row"><button class="btn btn-secondary" id="howToPlayBtn">CONTROLS</button><button class="btn btn-secondary" id="settingsBtn">SETTINGS</button><button class="btn btn-secondary" id="aboutBtn">ABOUT</button></div>
+        <button class="btn btn-tertiary btn-fullscreen" id="fullscreenBtn">⛶ FULLSCREEN</button>
+      </div>
+      <label class="theme-quickpick" for="theme-select-menu"><span>INTERFACE</span><span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i></span><select id="theme-select-menu" aria-label="Choose interface theme"><option value="noir">Neon Noir</option><option value="vaporwave">Retro Wave</option><option value="tactical">Tactical</option><option value="pop">Pop Chaos</option></select></label>
+      <div class="title-footer"><span>DESKTOP · TABLET · MOBILE</span><span>© AMANDEEP CHATTERJEE</span></div>
+    </section>
+
+    <!-- 2. Pause Screen -->
+    <section id="pause-screen" class="modal-card modal-hidden">
+      <div class="screen-kicker">RUN STATUS / HOLD</div><h2 class="modal-title">PAUSED</h2>
+      <p class="modal-sub">The arena is standing by.</p>
+
+      <div class="menu-actions">
+        <button class="btn btn-primary" id="resumeBtn">RESUME</button>
+        <div class="menu-secondary-row"><button class="btn btn-secondary" id="pauseRestartBtn">RESTART</button><button class="btn btn-secondary" id="pauseSettingsBtn">SETTINGS</button></div>
+        <button class="btn btn-tertiary" id="pauseHowToPlayBtn">CONTROLS</button>
+        <button class="btn btn-tertiary btn-fullscreen" id="pauseFullscreenBtn">⛶ FULLSCREEN</button>
+        <button class="btn btn-tertiary btn-quit" id="pauseQuitBtn">MAIN MENU</button>
+      </div>
+    </section>
+
+    <!-- 3. Game Over Screen -->
+    <section id="game-over-screen" class="modal-card modal-hidden">
+      <div class="screen-kicker">RUN COMPLETE</div><h1 class="game-over-title">GAME OVER</h1>
+      <div class="score-summary">
+        <div class="stat-pill">
+          <span class="stat-label">SCORE</span>
+          <span class="stat-num" id="final-score">0</span>
+        </div>
+        <div class="stat-pill"><span class="stat-label">HIGHEST WAVE</span><span class="stat-num" id="final-wave">1</span></div>
+        <div class="stat-pill"><span class="stat-label">KILLS</span><span class="stat-num" id="final-kills">0</span></div>
+        <div class="stat-pill"><span class="stat-label">SURVIVED</span><span class="stat-num" id="final-time">00:00</span></div>
+      </div>
+
+      <p class="flavor-desc" id="game-over-flavor">
+        You have been defeated by the forces of arbitrary chaos.
+      </p>
+
+      <div class="menu-actions">
+        <button class="btn btn-primary" id="restartBtn">PLAY AGAIN</button>
+        <button class="btn btn-secondary" id="mainMenuBtn">MAIN MENU</button>
+      </div>
+    </section>
+
+    <!-- 4. Controls Briefing Modal -->
+    <section id="how-to-play-modal" class="modal-card modal-large modal-hidden">
+      <div class="screen-kicker">FIELD GUIDE</div><h2 class="modal-title">CONTROLS</h2>
+
+      <div class="instructions-grid">
+        <div class="instruction-box">
+          <h3 class="box-title">DESKTOP</h3>
+          <ul class="guide-list">
+            <li><b>MOVE</b><span><kbd>A</kbd><kbd>D</kbd> or arrows</span></li>
+            <li><b>JUMP</b><span><kbd>SPACE</kbd> / <kbd>W</kbd> · double jump</span></li>
+            <li><b>AIM + FIRE</b><span>Mouse + click, or <kbd>J</kbd></span></li>
+            <li><b>PAUSE</b><span><kbd>ESC</kbd></span></li>
+          </ul>
+        </div>
+
+        <div class="instruction-box">
+          <h3 class="box-title">TOUCH</h3>
+          <ul class="guide-list">
+            <li><b>MOVE</b><span>Left / right pads</span></li>
+            <li><b>JUMP</b><span>Jump button · double jump pips</span></li>
+            <li><b>AIM</b><span>Drag the right aim pad</span></li>
+            <li><b>FIRE</b><span>Tap or hold SHOOT</span></li>
+            <li><b>PAUSE</b><span>Tap the top-bar control</span></li>
+          </ul>
+        </div>
+
+        <div class="instruction-box full-width-box">
+          <h3 class="box-title">ARENA SIGNALS</h3>
+          <ul class="guide-list">
+            <li><b>CHAOS METER</b><span>Fills over time and with kills/crates. At full, a random arena event begins.</span></li>
+            <li><b>STUMBLE</b><span>Occasional hiccups briefly invert movement and wobble aim.</span></li>
+            <li><b>WARNINGS</b><span>Red sniper laser marks its aim; meteor rings mark impact. Tank ring signals close proximity.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="closeHowToPlayBtn">BACK</button>
+    </section>
+
+    <!-- 5. Settings Modal -->
+    <section id="settings-modal" class="modal-card modal-hidden">
+      <div class="screen-kicker">PREFERENCES</div><h2 class="modal-title">SETTINGS</h2>
+      <div class="settings-list">
+        <section class="settings-section"><h3>APPEARANCE</h3><label class="setting-row" for="theme-select"><span><b>Interface theme</b><small>Changes all menus and HUD elements</small></span><span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i></span><select id="theme-select"><option value="noir">Neon Noir</option><option value="vaporwave">Retro Wave</option><option value="tactical">Tactical</option><option value="pop">Pop Chaos</option></select></label></section>
+        <section class="settings-section"><h3>VISUAL EFFECTS</h3>
+          <div class="setting-row"><span><b>Screen shake</b><small>Camera impact feedback</small></span><button class="toggle-btn" id="toggle-shake" type="button" aria-pressed="true">ON</button></div>
+          <div class="setting-row"><span><b>Flashing effects</b><small>Hiccup and reality effects</small></span><button class="toggle-btn" id="toggle-flashing" type="button" aria-pressed="true">ON</button></div>
+          <div class="setting-row"><span><b>Particle quality</b><small>Lower for more device headroom</small></span><button class="toggle-btn" id="toggle-particles" type="button">HIGH</button></div>
+        </section>
+        <section class="settings-section"><h3>AUDIO</h3>
+          <div class="setting-row"><span><b>Sound effects</b><small>Gameplay and interface sounds</small></span><button class="toggle-btn" id="toggle-sound" type="button" aria-pressed="true">ON</button></div>
+          <div class="setting-row"><span><b>Music</b><small>Optional local track.mp3</small></span><button class="toggle-btn" id="toggle-music" type="button" aria-pressed="true">ON</button></div>
+          <label class="setting-row setting-range" for="music-volume"><span><b>Music level</b><small id="music-volume-value">45%</small></span><input id="music-volume" type="range" min="0" max="100" value="45" aria-label="Music volume"></label>
+          <label class="setting-row setting-range" for="sound-volume"><span><b>Effects level</b><small id="sound-volume-value">65%</small></span><input id="sound-volume" type="range" min="0" max="100" value="65" aria-label="Sound effects volume"></label>
+        </section>
+        <section class="settings-section"><h3>ACCESSIBILITY</h3>
+          <div class="setting-row"><span><b>High contrast</b><small>Strengthen panel and meter edges</small></span><button class="toggle-btn" id="toggle-contrast" type="button" aria-pressed="false">OFF</button></div>
+          <div class="setting-row"><span><b>Reduce motion</b><small>Limit interface movement and flashes</small></span><button class="toggle-btn" id="toggle-motion" type="button" aria-pressed="false">OFF</button></div>
+        </section>
+        <section class="settings-section"><h3>GAMEPLAY CONTROLS</h3>
+          <div class="setting-row settings-reference"><span><b>Desktop</b><small>A/D or arrows move · Space/W jump · mouse aim + fire · J shoot · Esc pause</small></span></div>
+          <div class="setting-row settings-reference"><span><b>Touch</b><small>Left pad move · Jump · drag Aim pad · hold Shoot · top bar pause</small></span></div>
+        </section>
+      </div>
+      <button class="btn btn-primary" id="closeSettingsBtn">DONE</button>
+    </section>
+
+    <section id="about-modal" class="modal-card modal-hidden" aria-labelledby="about-title">
+      <div class="screen-kicker">ABOUT THE GAME</div><h2 class="modal-title" id="about-title">NEON CHAOS</h2>
+      <p class="flavor-desc">A responsive arcade survival shooter about unstable physics, relentless waves, and a reality-bending chaos meter.</p>
+      <div class="about-meta"><span>DESIGNED BY</span><b>Amandeep Chatterjee</b><span>BUILT FOR</span><b>Keyboard · Mouse · Touch</b></div>
+      <button class="btn btn-primary" id="closeAboutBtn">BACK</button>
+    </section>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
