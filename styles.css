@@ -64,6 +64,7 @@ html, body {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   transform-origin: center center;
+  cursor: crosshair;
 }
 
 #game.hiccup-glitch {
@@ -354,20 +355,18 @@ kbd {
 
 .touch-cluster {
   position: absolute;
-  bottom: calc(var(--safe-bottom) + 12px);
+  bottom: calc(var(--safe-bottom) + 16px);
   pointer-events: none;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
 }
 
 .touch-left {
-  left: calc(var(--safe-left) + 12px);
+  left: calc(var(--safe-left) + 16px);
 }
 
 .touch-right {
-  right: calc(var(--safe-right) + 12px);
+  right: calc(var(--safe-right) + 16px);
 }
 
 .dpad-group {
@@ -494,119 +493,10 @@ kbd {
   box-shadow: 0 0 6px var(--neon-yellow);
 }
 
-/* Virtual Aim Touchpad (Top of Right Cluster, 74px - 92px) */
-.aim-touchpad {
-  pointer-events: auto;
-  width: clamp(74px, 17vw, 92px);
-  height: clamp(74px, 17vw, 92px);
-  border-radius: 50%;
-  border: 2px dashed rgba(255, 255, 255, 0.35);
-  background: rgba(18, 4, 36, 0.45);
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: none;
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-}
-
-.aim-ring {
-  position: absolute;
-  inset: 8px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.aim-crosshair-h {
-  position: absolute;
-  width: 60%;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.aim-crosshair-v {
-  position: absolute;
-  height: 60%;
-  width: 1px;
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.aim-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff, var(--neon-yellow));
-  box-shadow: 0 0 10px var(--neon-yellow);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  transition: transform 0.05s ease-out;
-}
-
-.aim-label {
-  position: absolute;
-  bottom: 4px;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 1.5px;
-  color: rgba(255, 255, 255, 0.55);
-}
-
-/* Shoot Button (Bottom of Right Cluster, 68px - 84px) */
-.tbtn-shoot {
-  width: clamp(68px, 16vw, 84px);
-  height: clamp(68px, 16vw, 84px);
-  border-color: var(--neon-pink);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 46, 196, 0.4);
-}
-
-.shoot-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-
-.shoot-core {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff 20%, var(--neon-pink) 70%);
-  box-shadow: 0 0 10px var(--neon-pink);
-  transition: transform 0.08s;
-}
-
-.shoot-text {
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 1.5px;
-  color: var(--neon-pink);
-  text-shadow: 0 0 6px var(--neon-pink);
-}
-
-.tbtn-shoot:active, .tbtn-shoot.pressed {
-  transform: scale(0.92);
-  border-color: #fff;
-  box-shadow: 0 0 32px var(--neon-pink), inset 0 0 16px var(--neon-pink);
-}
-
-.tbtn-shoot:active .shoot-core, .tbtn-shoot.pressed .shoot-core {
-  transform: scale(1.3);
-  box-shadow: 0 0 18px #fff;
-}
-
 /* Hiccup Visual Feedback on Touch Controls */
 .touch-layer.hiccup-active .tbtn {
   border-color: var(--neon-yellow) !important;
   box-shadow: 0 0 18px var(--neon-yellow) !important;
-}
-
-.touch-layer.hiccup-active .aim-touchpad {
-  border-color: var(--neon-yellow) !important;
 }
 
 /* ==========================================================================
@@ -1195,6 +1085,7 @@ kbd { border-color: var(--ui-border-strong); border-radius: 3px; background: var
 .btn-quit { color: var(--ui-danger); }
 .btn-pulse { animation: none; }
 .title-footer { display: flex; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 1px solid var(--ui-border); color: var(--ui-muted); font: 9px var(--ui-mono); letter-spacing: 0.06em; }
+.homepage-copyright-box { grid-area: footer; width: 100%; padding: 8px 14px; background: rgba(14, 22, 32, 0.72); border: 1px solid var(--ui-border); border-radius: 6px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex !important; align-items: center; justify-content: center; color: var(--ui-muted); font: 700 9px/1.2 var(--ui-mono); letter-spacing: 0.1em; text-align: center; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); }
 .theme-quickpick { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--ui-muted); font: 9px var(--ui-mono); letter-spacing: 0.1em; }
 
 .modal-title { color: var(--ui-text); font: 750 28px/1.05 var(--ui-font); letter-spacing: 0.015em; text-shadow: none; }
@@ -1237,12 +1128,7 @@ kbd { border-color: var(--ui-border-strong); border-radius: 3px; background: var
 .tbtn:active, .tbtn.pressed { border-color: var(--ui-accent); box-shadow: 0 0 14px color-mix(in srgb, var(--ui-accent) 24%, transparent); }
 .tbtn-jump { border-color: color-mix(in srgb, var(--ui-accent) 70%, transparent); }
 .jump-arrow, .tbtn-sub { fill: var(--ui-accent); color: var(--ui-accent); }
-.tbtn-shoot { border-color: color-mix(in srgb, var(--ui-accent-2) 70%, transparent); }
-.shoot-core { background: var(--ui-accent-2); box-shadow: none; }
-.shoot-text { color: var(--ui-accent-2); text-shadow: none; }
-.aim-touchpad { border-color: var(--ui-border-strong); background: var(--ui-panel-soft); }
-.aim-dot { background: var(--ui-warn); box-shadow: 0 0 8px color-mix(in srgb, var(--ui-warn) 50%, transparent); }
-.touch-layer.hiccup-active .tbtn, .touch-layer.hiccup-active .aim-touchpad { border-color: var(--ui-warn) !important; box-shadow: 0 0 12px color-mix(in srgb, var(--ui-warn) 22%, transparent) !important; }
+.touch-layer.hiccup-active .tbtn { border-color: var(--ui-warn) !important; box-shadow: 0 0 12px color-mix(in srgb, var(--ui-warn) 22%, transparent) !important; }
 
 body.high-contrast { --ui-border: rgba(255, 255, 255, 0.52); --ui-border-strong: rgba(255, 255, 255, 0.82); --ui-muted: #d0d9dc; }
 body.high-contrast .hud-block, body.high-contrast .modal-card, body.high-contrast .setting-row { border-width: 2px; }
@@ -1274,11 +1160,9 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 @media (orientation: landscape) and (max-height: 560px) {
   #hud { padding-top: calc(var(--safe-top) + 7px); }
   .hud-block { padding: 6px 9px; }
-  .touch-cluster { bottom: calc(var(--safe-bottom) + 8px); gap: 6px; }
-  .tbtn-dir { width: clamp(46px, 9vh, 60px); height: clamp(46px, 9vh, 60px); }
-  .tbtn-jump { width: clamp(52px, 10vh, 66px); height: clamp(52px, 10vh, 66px); }
-  .aim-touchpad { width: clamp(58px, 11vh, 72px); height: clamp(58px, 11vh, 72px); }
-  .tbtn-shoot { width: clamp(54px, 10vh, 68px); height: clamp(54px, 10vh, 68px); }
+  .touch-cluster { bottom: calc(var(--safe-bottom) + 8px); }
+  .tbtn-dir { width: clamp(48px, 10vh, 62px); height: clamp(48px, 10vh, 62px); }
+  .tbtn-jump { width: clamp(56px, 11vh, 72px); height: clamp(56px, 11vh, 72px); }
   #desktop-hint { display: none; }
 }
 
@@ -1304,7 +1188,7 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
   .title-card .flavor-desc { grid-area: desc; margin: 0; font-size: 12px; }
   .title-card .menu-actions { grid-area: actions; align-self: center; gap: 7px; }
   .title-card .theme-quickpick { grid-area: theme; }
-  .title-card .title-footer { grid-area: footer; padding-top: 8px; }
+  .title-card .title-footer, .title-card .homepage-copyright-box { grid-area: footer; }
   .title-card .game-logo { font-size: clamp(28px, 6vh, 48px); }
   .title-card .logo-sub { font-size: 9px; letter-spacing: 0.1em; }
   .title-card .btn { min-height: 38px; padding-block: 8px; }
@@ -1541,19 +1425,13 @@ button, select, input { font-family: var(--ui-font); }
 .settings-reference { min-height: 40px; }
 
 /* Touch controls share the same materials but stay easy to find. */
-.touch-cluster { gap: 8px; }
 .tbtn { border: 1px solid var(--ui-border-strong); background: rgba(7, 12, 16, 0.78); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.36); backdrop-filter: none; -webkit-backdrop-filter: none; animation: none; }
 .tbtn-dir { width: clamp(var(--ui-touch-size), 14vw, 70px); height: clamp(var(--ui-touch-size), 14vw, 70px); }
-.tbtn-jump { width: clamp(64px, 15vw, 78px); height: clamp(64px, 15vw, 78px); border-color: color-mix(in srgb, var(--ui-accent) 58%, var(--ui-border)); }
-.tbtn-shoot { width: clamp(70px, 16vw, 84px); height: clamp(70px, 16vw, 84px); border-color: color-mix(in srgb, var(--ui-accent-2) 62%, var(--ui-border)); }
+.tbtn-jump { width: clamp(66px, 15vw, 82px); height: clamp(66px, 15vw, 82px); border-color: color-mix(in srgb, var(--ui-accent) 58%, var(--ui-border)); }
 .tbtn:active, .tbtn.pressed { transform: scale(0.96); border-color: var(--ui-accent); box-shadow: 0 0 12px color-mix(in srgb, var(--ui-accent) 20%, transparent); }
 .ticon { filter: none; }
 .jump-arrow, .tbtn-sub { fill: var(--ui-accent); color: var(--ui-accent); }
-.shoot-core { background: var(--ui-accent-2); box-shadow: none; }
-.shoot-text { color: var(--ui-accent-2); text-shadow: none; }
-.aim-touchpad { border: 1px solid var(--ui-border-strong); background: rgba(7, 12, 16, 0.7); backdrop-filter: none; -webkit-backdrop-filter: none; }
-.aim-dot { background: var(--ui-warn); box-shadow: 0 0 8px color-mix(in srgb, var(--ui-warn) 35%, transparent); }
-.touch-layer.hiccup-active .tbtn, .touch-layer.hiccup-active .aim-touchpad { border-color: var(--ui-warn) !important; box-shadow: 0 0 10px color-mix(in srgb, var(--ui-warn) 18%, transparent) !important; }
+.touch-layer.hiccup-active .tbtn { border-color: var(--ui-warn) !important; box-shadow: 0 0 10px color-mix(in srgb, var(--ui-warn) 18%, transparent) !important; }
 
 body.high-contrast { --ui-border: rgba(255, 255, 255, 0.54); --ui-border-strong: rgba(255, 255, 255, 0.85); --ui-muted: #c9d5d9; }
 body.high-contrast .hud-block, body.high-contrast .modal-card, body.high-contrast .setting-row { border-width: 2px; }

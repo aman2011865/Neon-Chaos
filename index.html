@@ -55,22 +55,8 @@
 
   <!-- Screen-Space Mobile Touch Controls -->
   <div id="touch-controls" class="touch-layer">
-    <!-- LEFT SIDE: Jump (Top) & Move Left/Right (Bottom) -->
+    <!-- LEFT SIDE: Movement Arrow Keys (Left & Right) -->
     <div class="touch-cluster touch-left" id="touch-left-zone">
-      <!-- Jump Button with Multi-jump Pips -->
-      <button class="tbtn tbtn-jump" id="tc-jump" aria-label="Jump">
-        <div class="jump-content">
-          <svg viewBox="0 0 24 24" class="ticon jump-arrow"><polygon points="12,4 4,14 20,14"/></svg>
-          <span class="tbtn-sub">JUMP</span>
-        </div>
-        <div class="jump-pips" id="jump-pips">
-          <span class="pip pip-active" id="pip-1"></span>
-          <span class="pip pip-active" id="pip-2"></span>
-          <span class="pip pip-bonus" id="pip-3"></span>
-        </div>
-      </button>
-
-      <!-- Move D-Pad (Left & Right) -->
       <div class="dpad-group">
         <button class="tbtn tbtn-dir" id="tc-left" aria-label="Move Left">
           <svg viewBox="0 0 24 24" class="ticon"><polygon points="15,4 7,12 15,20"/></svg>
@@ -82,22 +68,17 @@
       </div>
     </div>
 
-    <!-- RIGHT SIDE: Aim (Top) & Shoot (Bottom) -->
+    <!-- RIGHT SIDE: Jump Button (with Multi-jump Pips) -->
     <div class="touch-cluster touch-right" id="touch-right-zone">
-      <!-- Virtual Aim Touchpad -->
-      <div class="aim-touchpad" id="aim-touchpad" aria-label="Aim Touchpad">
-        <div class="aim-ring"></div>
-        <div class="aim-crosshair-h"></div>
-        <div class="aim-crosshair-v"></div>
-        <div class="aim-dot" id="aim-touch-dot"></div>
-        <div class="aim-label">AIM</div>
-      </div>
-
-      <!-- Shoot Button -->
-      <button class="tbtn tbtn-shoot" id="tc-shoot" aria-label="Shoot">
-        <div class="shoot-inner">
-          <div class="shoot-core"></div>
-          <span class="shoot-text">SHOOT</span>
+      <button class="tbtn tbtn-jump" id="tc-jump" aria-label="Jump">
+        <div class="jump-content">
+          <svg viewBox="0 0 24 24" class="ticon jump-arrow"><polygon points="12,4 4,14 20,14"/></svg>
+          <span class="tbtn-sub">JUMP</span>
+        </div>
+        <div class="jump-pips" id="jump-pips">
+          <span class="pip pip-active" id="pip-1"></span>
+          <span class="pip pip-active" id="pip-2"></span>
+          <span class="pip pip-bonus" id="pip-3"></span>
         </div>
       </button>
     </div>
@@ -116,7 +97,9 @@
         <button class="btn btn-tertiary btn-fullscreen" id="fullscreenBtn">⛶ FULLSCREEN</button>
       </div>
       <label class="theme-quickpick" for="theme-select-menu"><span>INTERFACE</span><span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i></span><select id="theme-select-menu" aria-label="Choose interface theme"><option value="noir">Neon Noir</option><option value="vaporwave">Retro Wave</option><option value="tactical">Tactical</option><option value="pop">Pop Chaos</option></select></label>
-      <div class="title-footer"><span>DESKTOP · TABLET · MOBILE</span><span>© AMANDEEP CHATTERJEE</span></div>
+      <div class="homepage-copyright-box">
+        <span>© AMANDEEP CHATTERJEE · ALL RIGHTS RESERVED</span>
+      </div>
     </section>
 
     <!-- 2. Pause Screen -->
@@ -174,10 +157,9 @@
         <div class="instruction-box">
           <h3 class="box-title">TOUCH</h3>
           <ul class="guide-list">
-            <li><b>MOVE</b><span>Left / right pads</span></li>
-            <li><b>JUMP</b><span>Jump button · double jump pips</span></li>
-            <li><b>AIM</b><span>Drag the right aim pad</span></li>
-            <li><b>FIRE</b><span>Tap or hold SHOOT</span></li>
+            <li><b>MOVE</b><span>Left / right arrows (left side)</span></li>
+            <li><b>JUMP</b><span>Jump button (right side) · double jump pips</span></li>
+            <li><b>AIM + FIRE</b><span>Tap anywhere on screen to shoot</span></li>
             <li><b>PAUSE</b><span>Tap the top-bar control</span></li>
           </ul>
         </div>
@@ -217,7 +199,7 @@
         </section>
         <section class="settings-section"><h3>GAMEPLAY CONTROLS</h3>
           <div class="setting-row settings-reference"><span><b>Desktop</b><small>A/D or arrows move · Space/W jump · mouse aim + fire · J shoot · Esc pause</small></span></div>
-          <div class="setting-row settings-reference"><span><b>Touch</b><small>Left pad move · Jump · drag Aim pad · hold Shoot · top bar pause</small></span></div>
+          <div class="setting-row settings-reference"><span><b>Touch</b><small>Left/right arrows (left side) · Jump (right side) · Tap screen to aim & shoot · top bar pause</small></span></div>
         </section>
       </div>
       <button class="btn btn-primary" id="closeSettingsBtn">DONE</button>
