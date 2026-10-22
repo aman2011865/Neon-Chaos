@@ -1270,9 +1270,10 @@ function updatePlayer(dt){
     p.fireCooldown = Math.max(0, p.fireCooldown - dt);
   }
   const interval = p.baseFireInterval / p.fireRateMult;
-  if (world.input.shootHeld && p.fireCooldown <= 0){
+  if ((world.input.shootHeld || world.input.shootPressed) && p.fireCooldown <= 0){
     firePlayerBullet();
     p.fireCooldown = interval;
+    world.input.shootPressed = false;
   }
 
   if (p.invuln > 0) p.invuln = Math.max(0, p.invuln - dt);
@@ -2130,6 +2131,8 @@ function gameLoop(now){
 //   UNIFIED INPUT SYSTEM
 // ==========================================================================
 const keys = {};
+const touchShootPointers = new Set();
+let mouseShootHeld = false;
 
 window.addEventListener('keydown', (e) => {
   if (e.repeat && e.code === 'Space') return;
@@ -2155,7 +2158,7 @@ function syncDesktopKeys(){
   const left = !!keys['KeyA'] || !!keys['ArrowLeft'];
   const right = !!keys['KeyD'] || !!keys['ArrowRight'];
   const jump = !!keys['Space'] || !!keys['ArrowUp'] || !!keys['KeyW'];
-  const shoot = !!keys['KeyJ'];
+  const shoot = !!keys['KeyJ'] || mouseShootHeld || touchShootPointers.size > 0;
 
   if (!activePointers.has('touch_move')){
     world.input.moveX = (left ? -1 : 0) + (right ? 1 : 0);
@@ -2166,7 +2169,6 @@ function syncDesktopKeys(){
   world.input.jumpHeld = jump;
 
   if (shoot && !world.input.shootHeld) world.input.shootPressed = true;
-  else world.input.shootPressed = false;
   world.input.shootHeld = shoot;
 }
 
@@ -2182,16 +2184,48 @@ canvas.addEventListener('pointermove', (e) => {
 
 canvas.addEventListener('pointerdown', (e) => {
   if (e.pointerType === 'mouse' && e.button === 0){
+    mouseShootHeld = true;
     world.input.shootPressed = true;
     world.input.shootHeld = true;
+  } else if (e.pointerType === 'touch' && world.state === "PLAYING"){
+    e.preventDefault();
+    touchShootPointers.add(e.pointerId);
+    canvas.setPointerCapture(e.pointerId);
+    updateTouchAim(e);
+    world.input.shootPressed = !world.input.shootHeld;
+    world.input.shootHeld = true;
+  }
+});
+
+canvas.addEventListener('pointermove', (e) => {
+  if (e.pointerType === 'touch' && touchShootPointers.has(e.pointerId)){
+    updateTouchAim(e);
   }
 });
 
 window.addEventListener('pointerup', (e) => {
   if (e.pointerType === 'mouse' && e.button === 0){
-    world.input.shootHeld = false;
+    mouseShootHeld = false;
+    world.input.shootHeld = !!keys['KeyJ'] || touchShootPointers.size > 0;
+  } else if (e.pointerType === 'touch' && touchShootPointers.delete(e.pointerId)){
+    world.input.shootHeld = !!keys['KeyJ'] || mouseShootHeld || touchShootPointers.size > 0;
   }
 });
+
+window.addEventListener('pointercancel', (e) => {
+  if (e.pointerType === 'touch' && touchShootPointers.delete(e.pointerId)){
+    world.input.shootHeld = !!keys['KeyJ'] || mouseShootHeld || touchShootPointers.size > 0;
+  }
+});
+
+function updateTouchAim(e){
+  const rect = canvas.getBoundingClientRect();
+  const worldPos = screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
+  const p = world.player;
+  if (!p) return;
+  world.input.aimAngle = Math.atan2(worldPos.y - (p.y + p.h / 2), worldPos.x - (p.x + p.w / 2));
+  world.input.hasAimTouch = true;
+}
 
 // ---------- Touch Controls Multitouch Layer ----------
 const activePointers = new Map();
